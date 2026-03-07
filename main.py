@@ -6,7 +6,7 @@ app = Flask(__name__)
 #root url, when '/' is accessed 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("home.html")
 #When user visits the website
 def home():
     return "Scheduling Webstie Loading..."
