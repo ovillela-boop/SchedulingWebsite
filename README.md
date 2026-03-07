@@ -15,6 +15,22 @@ List of behavioral functionalities to be Implemented:
 * Profile Management - (Employee account, Admin Account)
 
 ### Technical Stack: To be determined
+
+#### Flask Stack
+
+* Flask app (Python code)
+           ↓
+* Flask-SQLAlchemy (Flask integration layer)
+           ↓
+* SQL Alchemy (query builder, intead of sql querie use python)
+           ↓
+* PyMySQL (Python driver)
+           ↓
+* MySQL Server (Actual Database)
+           ↓
+* mysql CLI (tool to interact with database)
+
+
 #### Front-End:
 * React - Python  (flask)
 * HTML
