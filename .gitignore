@@ -1,1 +1,19 @@
-*
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+.venv/
+
+# Environment variables
+.env
+
+# Mac/Linux junk
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Database files (if local)
+*.db

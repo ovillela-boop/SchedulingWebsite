@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Users</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="home-header">
+    <h1>Saved Users</h1>
+    <a class="logout-link" href="{{ url_for('index') }}">Back to Home</a>
+  </header>
+
+  <main class="home-main">
+    <section class="feature-card">
+      <h2>User List</h2>
+
+      {% if users %}
+        <table border="1" cellpadding="10">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Username</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+              <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>No users found.</p>
+      {% endif %}
+    </section>
+  </main>
+</body>
+</html>

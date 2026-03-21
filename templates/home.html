@@ -42,6 +42,20 @@
         <p>Review attendance and work hours.</p>
       </article>
     </section>
+    <!-- New User Form Section (Integration mysql) -->
+    <section>
+      <h3>Create User</h3>
+      <form method="POST" action="{{ url_for('create_user')}}">
+        <label for="username">Username:</label><br>
+        <input type ="text" id="username" name="username" required><br><br>
+
+        <label for="email"> Email:</label><br>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <button type="submit"> Save User</button>
+      </form>
+    </section>
+
   </main>
 
   <footer class="home-footer">
