@@ -9,7 +9,10 @@
 <body>
   <header class="home-header">
     <h1>Scheduling Website</h1>
-    <a class="logout-link" href="/">Log Out</a>
+
+  {% if current_user %}
+    <a class="logout-link" href="{{ url_for('logout')}}">Log Out</a>
+  {% endif %}
   </header>
 
   <main class="home-main">
@@ -20,6 +23,30 @@
         from one central dashboard.
       </p>
     </section>
+    <!-- New User Form Section (Integration mysql) -->
+    <section class="feature-card">
+    {% if current_user %}
+      <h3>Welcome, {{current_user.username }}</h3>
+      <p>You are logged in as {{ current_user.email }}</p>
+      <a href="{{ url_for('list_users')}}">View all users</a>
+    {% else %}
+      <h3>Log in</h3>
+      <form method="POST" action="{{ url_for('login')}}">
+        <label for="username">Username:</label><br>
+        <input type ="text" id="username" name="username" required><br><br>
+
+        <label for="email"> Email:</label><br>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <button type="submit"> Log In</button>
+      </form>
+
+      <br>
+      <a href="{{ url_for('list_users') }}">View all users</a>
+
+    {% endif %}
+    </section>
+    <br>
 
     <section class="feature-grid">
       <article class="feature-card">
@@ -42,19 +69,7 @@
         <p>Review attendance and work hours.</p>
       </article>
     </section>
-    <!-- New User Form Section (Integration mysql) -->
-    <section>
-      <h3>Create User</h3>
-      <form method="POST" action="{{ url_for('create_user')}}">
-        <label for="username">Username:</label><br>
-        <input type ="text" id="username" name="username" required><br><br>
-
-        <label for="email"> Email:</label><br>
-        <input type="email" id="email" name="email" required><br><br>
-
-        <button type="submit"> Save User</button>
-      </form>
-    </section>
+    
 
   </main>
 
