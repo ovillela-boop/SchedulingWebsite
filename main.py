@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import or_
+from werkzeug.security import generate_password_hash, check_password_hash
 import os
 
 #creates instance of flask app
