@@ -20,6 +20,21 @@ body {
   background: linear-gradient(160deg, var(--bg-start), var(--bg-end));
   color: var(--text-main);
 }
+.auth-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.auth-box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    min-width: 280px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
 
 /* home page */
 .home-header {
