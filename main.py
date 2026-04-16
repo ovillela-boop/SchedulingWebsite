@@ -27,6 +27,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable = False)
+    #Stores encrypted password not original
+    password_hash = db.Column(db.String(255), nullable=False)
 
 # Mock pending tasks for dashboard preview
 MOCK_PENDING_TASKS = [
@@ -42,7 +44,8 @@ def index():
     current_user = None
 
     if "user_id" in session:
-        current_user = User.query.get(session["user_id"])
+        #added user in parameter
+        current_user = db.session.get(User, session["user_id"])
 
     return render_template(
         "home.html",
@@ -53,31 +56,32 @@ def index():
         email="",
     )
 
-#Login and stay logged in, log in, create user
-@app.route("/login", methods=["POST"])
-def login():
+@app.route("/register", methods=["POST"])
+def register():
     username = request.form["username"].strip()
     email = request.form["email"].strip()
+    password = request.form["password"].strip()
 
-    #find exisiting user with email
-    user = User.query.filter_by(email=email).first()
-    if user:
-        if user.username != username:
-            return render_template(
-                "home.html",
-                current_user=None,
-                pending_tasks=MOCK_PENDING_TASKS,
-                error="This user already exists. Username does not match this email.",
-                username=username,
-                email=email,
-            )
-        
-        session["user_id"] = user.id
-        session["username"] = user.username
-        session["email"] = user.email
-        return redirect(url_for("index"))
+    existing_user = User.query.filter(
+        or_(User.username == username, User.email == email)
+    ).first()
+
+    if existing_user:
+        return render_template(
+            "home.html",
+            current_user=None,
+            pending_tasks=MOCK_PENDING_TASKS,
+            error="Username or email already exists",
+            username=username,
+            email=email,
+        )
+    
     try:
-        new_user = User(username=username, email=email)
+        new_user = User(
+            username = username,
+            email = email,
+            password_hash = generate_password_hash(password)
+        )
         db.session.add(new_user)
         db.session.commit()
 
@@ -86,16 +90,41 @@ def login():
         session["email"] = new_user.email
 
         return redirect(url_for("index"))
+    
     except IntegrityError:
         db.session.rollback()
         return render_template(
             "home.html",
             current_user=None,
             pending_tasks=MOCK_PENDING_TASKS,
-            error="This user already exists. Please use a different username or email.",
+            error="Could not create account. Try again.",
             username=username,
-            email=email,
+            email=email
         )
+ 
+#Login and stay logged in, log in, create user
+@app.route("/login", methods=["POST"])
+def login():
+    email = request.form["email"].strip()
+    password = request.form["password"].strip()
+
+    #find exisiting user with email
+    user = User.query.filter_by(email=email).first()
+    if user and check_password_hash(user.password_hash, password):
+        session["user_id"] = user.id
+        session["username"] = user.username
+        session["email"] = user.email
+        return redirect(url_for("index"))
+    
+    return render_template(
+        "home.html",
+        current_user=None,
+        pending_tasks=MOCK_PENDING_TASKS,
+        error="Invalid email or password",
+        username="",
+        email=email
+    )
+
 
 @app.route("/logout")
 def logout():
