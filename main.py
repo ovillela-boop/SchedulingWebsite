@@ -32,15 +32,15 @@ class User(db.Model):
     #Created user Roles (manager, employee, etc) (currently using only managers)
     role = db.Column(db.String(20), nullable=False, default="employee")
 
-#Checking roles
+#Helper Functions
 def is_logged_in():
     return "user_id" in session
-
+#Helper Function
 def current_logged_in_user():
     if "user_id" in session:
         return db.session.get(User, session["user_id"])
     return None
-
+#Helper Function
 def is_manager():
     user = current_logged_in_user()
     return user is not None and user.role == "Manager"
@@ -151,6 +151,17 @@ def login():
         username="",
         email=email
     )
+
+# Manager Dashboard (anyone not manager role gets redirected)
+@app.route("/manager")
+def manager_dashboard():
+    if not is_logged_in():
+        return redirect(url_for("index"))
+    
+    if not is_manager():
+        return redirect(url_for("index"))
+    
+    return render_template("manager.html", current_user=current_logged_in_user())
 
 # Log out on top right corner
 @app.route("/logout")
