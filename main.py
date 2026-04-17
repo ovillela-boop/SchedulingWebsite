@@ -32,6 +32,19 @@ class User(db.Model):
     #Created user Roles (manager, employee, etc) (currently using only managers)
     role = db.Column(db.String(20), nullable=False, default="employee")
 
+#Checking roles
+def is_logged_in():
+    return "user_id" in session
+
+def current_logged_in_user():
+    if "user_id" in session:
+        return db.session.get(User, session["user_id"])
+    return None
+
+def is_manager():
+    user = current_logged_in_user()
+    return user is not None and user.role == "Manager"
+
 # Mock pending tasks for dashboard preview
 MOCK_PENDING_TASKS = [
     {"title": "Follow up with client about Monday booking", "priority": "High"},
@@ -43,11 +56,13 @@ MOCK_PENDING_TASKS = [
 #root url, when '/' is accessed 
 @app.route("/")
 def index():
-    current_user = None
+    current_user = current_logged_in_user()
+    
+    # current_user = None
 
-    if "user_id" in session:
-        #added user in parameter
-        current_user = db.session.get(User, session["user_id"])
+    # if "user_id" in session:
+    #     #added user in parameter
+    #     current_user = db.session.get(User, session["user_id"])
 
     return render_template(
         "home.html",
