@@ -22,13 +22,15 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # Initialise the databse
 db = SQLAlchemy(app)
 
-# databse table
+# User Model databse
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable = False)
     #Stores encrypted password not original
     password_hash = db.Column(db.String(255), nullable=False)
+    #Created user Roles (manager, employee, etc) (currently using only managers)
+    role = db.Column(db.String(20), nullable=False, default="employee")
 
 # Mock pending tasks for dashboard preview
 MOCK_PENDING_TASKS = [
@@ -62,6 +64,7 @@ def dashboard():
     if "user_id" not in session:
         return redirect(url_for("index"))
     return render_template("dashboard.html")
+
 # a new user must register before using login 
 @app.route("/register", methods=["POST"])
 def register():
@@ -87,7 +90,9 @@ def register():
         new_user = User(
             username = username,
             email = email,
-            password_hash = generate_password_hash(password)
+            password_hash = generate_password_hash(password),
+            #temporary all new users as manager until fully configured
+            role="Manager"
         )
         db.session.add(new_user)
         db.session.commit()
@@ -109,7 +114,7 @@ def register():
             email=email
         )
  
-#Login after user has created account
+#Login after user has created account (logged in)
 @app.route("/login", methods=["POST"])
 def login():
     email = request.form["email"].strip()
@@ -132,12 +137,13 @@ def login():
         email=email
     )
 
-
+# Log out on top right corner
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("index"))
 
+# temporary webpage that shows all current users
 @app.route("/users")
 def list_users():
     users = User.query.all()
