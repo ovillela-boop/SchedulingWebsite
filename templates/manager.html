@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manager Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <h1>Manager Dashboard</h1>
+  <p>Welcome, {{ current_user.username }}</p>
+  <p>This page is for manager features only.</p>
+
+  <ul>
+    <li>Future: assign shifts</li>
+    <li>Future: view employees</li>
+    <li>Future: manage schedules</li>
+  </ul>
+
+  <a href="{{ url_for('index') }}">Back to Home</a>
+</body>
+</html>
