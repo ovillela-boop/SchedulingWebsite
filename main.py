@@ -56,6 +56,13 @@ def index():
         email="",
     )
 
+#Protecting pages behind login using dashboard
+@app.route("/dashboard")
+def dashboard():
+    if "user_id" not in session:
+        return redirect(url_for("index"))
+    return render_template("dashboard.html")
+# a new user must register before using login 
 @app.route("/register", methods=["POST"])
 def register():
     username = request.form["username"].strip()
@@ -102,7 +109,7 @@ def register():
             email=email
         )
  
-#Login and stay logged in, log in, create user
+#Login after user has created account
 @app.route("/login", methods=["POST"])
 def login():
     email = request.form["email"].strip()
