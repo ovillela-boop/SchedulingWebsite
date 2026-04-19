@@ -5,7 +5,7 @@ from sqlalchemy import or_
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from decorators import login_required, manager_required
-from datetime import datetime
+from datetime import datetime, timezone
 
 #creates instance of flask app
 app = Flask(__name__)
@@ -273,6 +273,51 @@ def shift_detail(id):
         return redirect(url_for("shifts_view"))
         
     return render_template("shift_detail.html", shift=shift, current_user=user)
+
+@app.route("/clock")
+@login_required
+def clock_view():
+    user = current_logged_in_user()
+    error = request.args.get("error")
+    
+    active_log = ClockLog.query.filter_by(user_id=user.id, clock_out=None).first()
+    last_log = ClockLog.query.filter_by(user_id=user.id).order_by(ClockLog.id.desc()).first()
+    
+    current_status = "Clocked In" if active_log else "Clocked Out"
+    
+    return render_template("clock.html", 
+                           current_status=current_status, 
+                           last_log=last_log, 
+                           error=error)
+
+@app.route("/clock/in", methods=["POST"])
+@login_required
+def clock_in():
+    user = current_logged_in_user()
+    active_log = ClockLog.query.filter_by(user_id=user.id, clock_out=None).first()
+    
+    if active_log:
+        return redirect(url_for('clock_view', error="Cannot clock in twice without clocking out."))
+        
+    new_log = ClockLog(user_id=user.id, clock_in=datetime.now(timezone.utc))
+    db.session.add(new_log)
+    db.session.commit()
+    
+    return redirect(url_for('clock_view'))
+
+@app.route("/clock/out", methods=["POST"])
+@login_required
+def clock_out():
+    user = current_logged_in_user()
+    active_log = ClockLog.query.filter_by(user_id=user.id, clock_out=None).first()
+    
+    if not active_log:
+        return redirect(url_for('clock_view', error="Cannot clock out without clocking in first."))
+        
+    active_log.clock_out = datetime.now(timezone.utc)
+    db.session.commit()
+    
+    return redirect(url_for('clock_view'))
 
 
 if __name__ == '__main__':

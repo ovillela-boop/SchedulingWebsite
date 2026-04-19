@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Clock</title>
+</head>
+<body>
+    <h1>Time Clock</h1>
+    <a href="{{ url_for('index') }}">Home</a>
+    <br><br>
+    
+    {% if error %}
+        <p style="color: red; font-weight: bold;">{{ error }}</p>
+    {% endif %}
+
+    <div style="border: 2px solid #ccc; padding: 20px; width: 300px; text-align: center;">
+        <h2>Status: <span style="{% if current_status == 'Clocked In' %}color: green;{% else %}color: gray;{% endif %}">{{ current_status }}</span></h2>
+        
+        <div style="text-align: left;">
+            <p><strong>Last Clock In:</strong><br>
+                {% if last_log and last_log.clock_in %}
+                    {{ last_log.clock_in.strftime('%Y-%m-%d %H:%M:%S') }} UTC
+                {% else %}
+                    Never
+                {% endif %}
+            </p>
+            
+            <p><strong>Last Clock Out:</strong><br>
+                {% if last_log and last_log.clock_out %}
+                    {{ last_log.clock_out.strftime('%Y-%m-%d %H:%M:%S') }} UTC
+                {% elif last_log and not last_log.clock_out %}
+                    <em>Currently active shift</em>
+                {% else %}
+                    Never
+                {% endif %}
+            </p>
+        </div>
+        
+        <hr>
+        
+        {% if current_status == "Clocked Out" %}
+            <form action="{{ url_for('clock_in') }}" method="POST">
+                <button type="submit" style="padding: 10px 20px; font-size: 16px; background-color: #28a745; color: white; cursor: pointer; width: 100%;">
+                    Clock In
+                </button>
+            </form>
+        {% else %}
+            <form action="{{ url_for('clock_out') }}" method="POST">
+                <button type="submit" style="padding: 10px 20px; font-size: 16px; background-color: #dc3545; color: white; cursor: pointer; width: 100%;">
+                    Clock Out
+                </button>
+            </form>
+        {% endif %}
+    </div>
+</body>
+</html>
