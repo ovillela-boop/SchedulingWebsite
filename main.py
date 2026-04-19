@@ -19,18 +19,9 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-# Initialise the databse
-db = SQLAlchemy(app)
-
-# User Model databse
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable = False)
-    #Stores encrypted password not original
-    password_hash = db.Column(db.String(255), nullable=False)
-    #Created user Roles (manager, employee, etc) (currently using only managers)
-    role = db.Column(db.String(20), nullable=False, default="employee")
+# Initialize the db with app
+from models import db, User, Task, Shift, ClockLog, Booking
+db.init_app(app)
 
 #Helper Functions
 def is_logged_in():
@@ -69,7 +60,7 @@ def index():
         current_user=current_user,
         pending_tasks=MOCK_PENDING_TASKS,
         error=None,
-        username="",
+        name="",
         email="",
     )
 
@@ -88,7 +79,7 @@ def register():
     password = request.form["password"].strip()
 
     existing_user = User.query.filter(
-        or_(User.username == username, User.email == email)
+        or_(User.name == username, User.email == email)
     ).first()
 
     if existing_user:
@@ -97,13 +88,13 @@ def register():
             current_user=None,
             pending_tasks=MOCK_PENDING_TASKS,
             error="Username or email already exists",
-            username=username,
+            name=username,
             email=email,
         )
     
     try:
         new_user = User(
-            username = username,
+            name = username,
             email = email,
             password_hash = generate_password_hash(password),
             #temporary all new users as manager until fully configured
@@ -113,7 +104,7 @@ def register():
         db.session.commit()
 
         session["user_id"] = new_user.id
-        session["username"] = new_user.username
+        session["name"] = new_user.name
         session["email"] = new_user.email
 
         return redirect(url_for("index"))
@@ -125,7 +116,7 @@ def register():
             current_user=None,
             pending_tasks=MOCK_PENDING_TASKS,
             error="Could not create account. Try again.",
-            username=username,
+            name=username,
             email=email
         )
  
@@ -139,7 +130,7 @@ def login():
     user = User.query.filter_by(email=email).first()
     if user and check_password_hash(user.password_hash, password):
         session["user_id"] = user.id
-        session["username"] = user.username
+        session["name"] = user.name
         session["email"] = user.email
         return redirect(url_for("index"))
     
@@ -148,7 +139,7 @@ def login():
         current_user=None,
         pending_tasks=MOCK_PENDING_TASKS,
         error="Invalid email or password",
-        username="",
+        name="",
         email=email
     )
 
