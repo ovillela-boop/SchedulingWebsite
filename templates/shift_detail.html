@@ -1,14 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shift Details</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Shift Details{% endblock %}
+
+{% block content %}
     <h1>Shift Details</h1>
-    <a href="{{ url_for('shifts_view') }}">Back to Shifts Dashboard</a>
-    <br><br>
     
     <div style="border: 1px solid #ccc; padding: 20px; width: 300px;">
         <p><strong>Employee:</strong> {{ shift.user.name }}</p>
@@ -17,5 +12,4 @@
         <p><strong>Status:</strong> {{ shift.status }}</p>
         <p><strong>Notes:</strong> {{ shift.notes or 'No notes provided' }}</p>
     </div>
-</body>
-</html>
+{% endblock %}

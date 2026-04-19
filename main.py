@@ -55,9 +55,7 @@ def index():
 #Protecting pages behind login using dashboard
 @app.route("/dashboard")
 def dashboard():
-    if "user_id" not in session:
-        return redirect(url_for("index"))
-    return render_template("dashboard.html")
+    return redirect(url_for("index"))
 
 # a new user must register before using login 
 @app.route("/register", methods=["POST"])
@@ -85,8 +83,7 @@ def register():
             name = username,
             email = email,
             password_hash = generate_password_hash(password),
-            #temporary all new users as manager until fully configured
-            role="Manager"
+            role="Employee"
         )
         db.session.add(new_user)
         db.session.commit()

@@ -1,15 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Users</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Saved Users{% endblock %}
+
+{% block content %}
   <header class="home-header">
     <h1>Saved Users</h1>
-    <a class="logout-link" href="{{ url_for('index') }}">Back to Home</a>
   </header>
 
   <main class="home-main">
@@ -40,5 +35,4 @@
       {% endif %}
     </section>
   </main>
-</body>
-</html>
+{% endblock %}

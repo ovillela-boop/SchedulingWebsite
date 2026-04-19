@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shifts Dashboard</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Shifts Dashboard{% endblock %}
+
+{% block content %}
     <h1>Shifts Dashboard</h1>
-    <a href="{{ url_for('index') }}">Home</a>
     {% if current_user.role == 'Manager' %}
         <a href="{{ url_for('create_shift') }}">Create New Shift</a>
     {% endif %}
@@ -15,7 +11,7 @@
     <br><br>
     
     {% if error %}
-        <p style="color: red;">{{ error }}</p>
+        <p class="flash-error">{{ error }}</p>
     {% endif %}
 
     <table border="1" cellpadding="10" cellspacing="0">
@@ -48,5 +44,4 @@
             {% endfor %}
         </tbody>
     </table>
-</body>
-</html>
+{% endblock %}

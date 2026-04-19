@@ -1,22 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-  <!-- Header -->
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scheduling Homepage</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<!-- Body -->
-<body>
+{% extends "base.html" %}
 
+{% block title %}Scheduling Homepage{% endblock %}
+
+{% block content %}
   <!-- Body Header -->
   <header class="home-header">
-    <h1>Scheduling Website</h1>
-
-  {% if current_user %}
-    <a class="logout-link" href="{{ url_for('logout')}}">Log Out</a>
-  {% endif %}
+    <h1>Welcome to the Scheduling Dashboard</h1>
   </header>
 
   <!-- Body Main -->
@@ -24,33 +13,42 @@
 
     <!-- Section Hero -->
     <section class="hero">
-      <h2>Scheduling Dashboard</h2>
-
       <!-- Section Description -->
       <p>
-        Manage bookings, schedules, tasks, attendance, and team communication
+        Manage schedules, tasks, attendance, and team communication
         from one central dashboard.
       </p>
     </section>
+
     <!-- Log on / Create new user Form Section (Integration mysql) -->
     <section class="feature-card">
     {% if current_user %}
-      <h3>Welcome, {{current_user.name }}</h3>
+      <h3>Welcome, {{ current_user.name }}</h3>
       <p>You are logged in as {{ current_user.email }}</p>
 
-      <!-- Shows Current role oncee logged in -->
+      <!-- Shows Current role once logged in -->
       <p>Role: {{ current_user.role }}</p>
-      {% if current_user.role == "Manager" %}
-      <p><a href="{{ url_for('manager_dashboard') }}">Go to Manager Dashboard</a></p>
+      <a href="{{ url_for('list_users')}}">View all saved users</a>
+      
+      <br><br>
+      <h4>Your Recent Tasks</h4>
+      {% if pending_tasks %}
+        <ul>
+        {% for pt in pending_tasks %}
+          <li>{{ pt.title }} - {{ pt.status }}</li>
+        {% endfor %}
+        </ul>
+      {% else %}
+        <p>No pending tasks! Good job.</p>
       {% endif %}
-      <a href="{{ url_for('list_users')}}">View all users</a>
+      
     {% else %}
       {% if error %}
-      <p style="color: red;">{{ error }}</p>
+      <p class="flash-error">{{ error }}</p>
       {% endif %}
 
-      <div class = "auth-container">
-        <div class = "auth-box">
+      <div class="auth-container">
+        <div class="auth-box">
           <h3>Register</h3>
           <form method="POST" action="{{ url_for('register') }}">
             <label for="register-username">Username:</label><br>
@@ -66,13 +64,11 @@
           </form>
         </div>
 
-        <div class = "auth-box">
-
-
+        <div class="auth-box">
           <h3>Log in</h3>
-            <form method="POST" action="{{ url_for('login')}}">
+            <form method="POST" action="{{ url_for('login') }}">
               <label for="login-email">Email:</label><br>
-              <input type ="email" id="login-email" name="email" required><br><br>
+              <input type="email" id="login-email" name="email" required><br><br>
 
               <label for="login-password"> Password:</label><br>
               <input type="password" id="login-password" name="password" required><br><br>
@@ -81,41 +77,40 @@
             </form>
         </div>
       </div>  
-      <br>
-      <a href="{{ url_for('list_users') }}">View all users</a>
-
     {% endif %}
     </section>
-    <!-- End new user / log on form -->
     <br>
 
+    {% if current_user %}
     <section class="feature-grid">
       <article class="feature-card">
-        <h3>Bookings</h3>
-        <p>Create and review appointment plans.</p>
-      </article>
-
-      <article class="feature-card">
-        <h3>Schedules</h3>
+        <h3><a href="{{ url_for('shifts_view') }}" style="text-decoration:none; color:inherit;">Schedules 📅</a></h3>
         <p>Check shift arrangements quickly.</p>
       </article>
 
       <article class="feature-card">
-        <h3>Tasks</h3>
+        <h3><a href="{{ url_for('tasks_view') }}" style="text-decoration:none; color:inherit;">Tasks ✓</a></h3>
         <p>Track pending and completed tasks.</p>
       </article>
 
       <article class="feature-card">
-        <h3>Clock Logs</h3>
+        <h3><a href="{{ url_for('clock_view') }}" style="text-decoration:none; color:inherit;">Clock Logs ⏱</a></h3>
         <p>Review attendance and work hours.</p>
       </article>
+
+      {% if current_user.role == "Manager" %}
+      <article class="feature-card" style="border-left: 4px solid #ffcccc;">
+        <h3><a href="{{ url_for('manager_dashboard') }}" style="text-decoration:none; color:inherit;">Manager Dash ♚</a></h3>
+        <p>Exclusive managerial tools.</p>
+      </article>
+      {% endif %}
     </section>
-    
+    {% endif %}
 
   </main>
 
-  <footer class="home-footer">
-    <div class="footer-section">
+  <footer class="home-footer" style="margin-top: 40px; border-top: 1px solid #ccc; padding-top: 20px;">
+    <div class="footer-section" style="display: inline-block; width: 45%; vertical-align: top;">
       <h3>About Us</h3>
       <p>
         Our scheduling platform helps teams organize appointments, staff shifts,
@@ -123,12 +118,10 @@
       </p>
     </div>
 
-    <div class="footer-section">
+    <div class="footer-section" style="display: inline-block; width: 45%; vertical-align: top;">
       <h3>Contact Us</h3>
       <p>Email: support@schedulingapp.com</p>
-      <p>Phone: (123) 456-7890</p>
       <p>Location: California State University, Fullerton</p>
     </div>
   </footer>
-</body>
-</html>
+{% endblock %}

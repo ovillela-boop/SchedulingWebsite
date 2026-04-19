@@ -1,17 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Shift</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Create Shift{% endblock %}
+
+{% block content %}
     <h1>Create New Shift</h1>
-    <a href="{{ url_for('shifts_view') }}">Back to Shifts Dashboard</a>
-    <br><br>
     
     {% if error %}
-        <p style="color: red;">{{ error }}</p>
+        <p class="flash-error">{{ error }}</p>
     {% endif %}
 
     <form action="{{ url_for('create_shift') }}" method="POST">
@@ -37,5 +32,4 @@
         
         <button type="submit">Create Shift</button>
     </form>
-</body>
-</html>
+{% endblock %}

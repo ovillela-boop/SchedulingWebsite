@@ -1,21 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Time Clock</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Time Clock{% endblock %}
+
+{% block content %}
     <h1>Time Clock</h1>
-    <a href="{{ url_for('index') }}">Home</a>
-    <br><br>
     
     {% if error %}
-        <p style="color: red; font-weight: bold;">{{ error }}</p>
+        <p class="flash-error">{{ error }}</p>
     {% endif %}
 
     <div style="border: 2px solid #ccc; padding: 20px; width: 300px; text-align: center;">
-        <h2>Status: <span style="{% if current_status == 'Clocked In' %}color: green;{% else %}color: gray;{% endif %}">{{ current_status }}</span></h2>
+        {% set status_color = 'green' if current_status == 'Clocked In' else 'gray' %}
+        <h2>Status: <span style="color: {{ status_color }};">{{ current_status }}</span></h2>
         
         <div style="text-align: left;">
             <p><strong>Last Clock In:</strong><br>
@@ -53,5 +49,4 @@
             </form>
         {% endif %}
     </div>
-</body>
-</html>
+{% endblock %}
