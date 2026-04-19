@@ -5,6 +5,7 @@ from sqlalchemy import or_
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from decorators import login_required, manager_required
+from datetime import datetime
 
 #creates instance of flask app
 app = Flask(__name__)
@@ -216,6 +217,62 @@ def update_task(id):
         
     db.session.commit()
     return redirect(url_for('tasks_view'))
+
+@app.route("/shifts")
+@login_required
+def shifts_view():
+    user = current_logged_in_user()
+    if user.role == "Manager":
+        shifts = Shift.query.all()
+    else:
+        shifts = Shift.query.filter_by(user_id=user.id).all()
+        
+    return render_template("shifts.html", shifts=shifts, current_user=user)
+
+@app.route("/shifts/create", methods=["GET", "POST"])
+@login_required
+@manager_required
+def create_shift():
+    error = None
+    if request.method == "POST":
+        user_id = request.form.get("user_id")
+        date_str = request.form.get("date")
+        start_time_str = request.form.get("start_time")
+        end_time_str = request.form.get("end_time")
+        notes = request.form.get("notes")
+        
+        shift_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+        start_time = datetime.strptime(start_time_str, "%H:%M").time()
+        end_time = datetime.strptime(end_time_str, "%H:%M").time()
+        
+        if start_time >= end_time:
+            error = "Start time must be before end time"
+        else:
+            new_shift = Shift(
+                user_id=int(user_id),
+                date=shift_date,
+                start_time=start_time,
+                end_time=end_time,
+                notes=notes,
+                status='scheduled'
+            )
+            db.session.add(new_shift)
+            db.session.commit()
+            return redirect(url_for('shifts_view'))
+            
+    users = User.query.all()
+    return render_template("create_shift.html", users=users, current_user=current_logged_in_user(), error=error)
+
+@app.route("/shifts/<int:id>")
+@login_required
+def shift_detail(id):
+    shift = Shift.query.get_or_404(id)
+    user = current_logged_in_user()
+    
+    if user.role != "Manager" and shift.user_id != user.id:
+        return redirect(url_for("shifts_view"))
+        
+    return render_template("shift_detail.html", shift=shift, current_user=user)
 
 
 if __name__ == '__main__':

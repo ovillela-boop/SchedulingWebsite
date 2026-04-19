@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shifts Dashboard</title>
+</head>
+<body>
+    <h1>Shifts Dashboard</h1>
+    <a href="{{ url_for('index') }}">Home</a>
+    {% if current_user.role == 'Manager' %}
+        <a href="{{ url_for('create_shift') }}">Create New Shift</a>
+    {% endif %}
+
+    <br><br>
+    
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <table border="1" cellpadding="10" cellspacing="0">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Date</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Notes</th>
+                <th>Status</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for shift in shifts %}
+            <tr>
+                <td>{{ shift.user.name }}</td>
+                <td>{{ shift.date }}</td>
+                <td>{{ shift.start_time.strftime('%H:%M') }}</td>
+                <td>{{ shift.end_time.strftime('%H:%M') }}</td>
+                <td>{{ shift.notes or '' }}</td>
+                <td>{{ shift.status }}</td>
+                <td><a href="{{ url_for('shift_detail', id=shift.id) }}">View</a></td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7">No shifts scheduled.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

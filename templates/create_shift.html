@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Shift</title>
+</head>
+<body>
+    <h1>Create New Shift</h1>
+    <a href="{{ url_for('shifts_view') }}">Back to Shifts Dashboard</a>
+    <br><br>
+    
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <form action="{{ url_for('create_shift') }}" method="POST">
+        <label for="user_id">Assign To Employee:</label><br>
+        <select id="user_id" name="user_id" required>
+            <option value="">-- Select Employee --</option>
+            {% for u in users %}
+                <option value="{{ u.id }}">{{ u.name }} ({{ u.role }})</option>
+            {% endfor %}
+        </select><br><br>
+        
+        <label for="date">Date:</label><br>
+        <input type="date" id="date" name="date" required><br><br>
+        
+        <label for="start_time">Start Time:</label><br>
+        <input type="time" id="start_time" name="start_time" required><br><br>
+        
+        <label for="end_time">End Time:</label><br>
+        <input type="time" id="end_time" name="end_time" required><br><br>
+        
+        <label for="notes">Notes:</label><br>
+        <textarea id="notes" name="notes" rows="3" cols="30"></textarea><br><br>
+        
+        <button type="submit">Create Shift</button>
+    </form>
+</body>
+</html>
