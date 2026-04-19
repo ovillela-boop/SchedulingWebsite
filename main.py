@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import or_
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
-from functools import wraps
+from decorators import login_required, manager_required
 
 #creates instance of flask app
 app = Flask(__name__)
@@ -24,34 +24,11 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 from models import db, User, Task, Shift, ClockLog, Booking
 db.init_app(app)
 
-#Helper Functions
-def is_logged_in():
-    return "user_id" in session
 #Helper Function
 def current_logged_in_user():
     if "user_id" in session:
         return db.session.get(User, session["user_id"])
     return None
-#Helper Function
-def is_manager():
-    user = current_logged_in_user()
-    return user is not None and user.role == "Manager"
-
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not is_logged_in():
-            return redirect(url_for('index'))
-        return f(*args, **kwargs)
-    return decorated_function
-
-def manager_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not is_manager():
-            return redirect(url_for('tasks_view'))
-        return f(*args, **kwargs)
-    return decorated_function
 
 #root url, when '/' is accessed 
 @app.route("/")
@@ -116,6 +93,7 @@ def register():
         session["user_id"] = new_user.id
         session["name"] = new_user.name
         session["email"] = new_user.email
+        session["role"] = new_user.role
 
         return redirect(url_for("index"))
     
@@ -131,8 +109,11 @@ def register():
         )
  
 #Login after user has created account (logged in)
-@app.route("/login", methods=["POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
+    if request.method == "GET":
+        return render_template("home.html", current_user=None, pending_tasks=[], error=None, name="", email="")
+
     email = request.form["email"].strip()
     password = request.form["password"].strip()
 
@@ -142,6 +123,7 @@ def login():
         session["user_id"] = user.id
         session["name"] = user.name
         session["email"] = user.email
+        session["role"] = user.role
         return redirect(url_for("index"))
     
     return render_template(
@@ -155,13 +137,9 @@ def login():
 
 # Manager Dashboard (anyone not manager role gets redirected)
 @app.route("/manager")
+@login_required
+@manager_required
 def manager_dashboard():
-    if not is_logged_in():
-        return redirect(url_for("index"))
-    
-    if not is_manager():
-        return redirect(url_for("index"))
-    
     return render_template("manager.html", current_user=current_logged_in_user())
 
 # Log out on top right corner
