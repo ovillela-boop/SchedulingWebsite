@@ -4,6 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import or_
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
+from functools import wraps
 
 #creates instance of flask app
 app = Flask(__name__)
@@ -36,29 +37,38 @@ def is_manager():
     user = current_logged_in_user()
     return user is not None and user.role == "Manager"
 
-# Mock pending tasks for dashboard preview
-MOCK_PENDING_TASKS = [
-    {"title": "Follow up with client about Monday booking", "priority": "High"},
-    {"title": "Prepare weekly team schedule", "priority": "Medium"},
-    {"title": "Review clock-in discrepancies for Friday", "priority": "Low"},
-    {"title": "Update meeting notes in shared workspace", "priority": "Medium"},
-]
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not is_logged_in():
+            return redirect(url_for('index'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def manager_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not is_manager():
+            return redirect(url_for('tasks_view'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 #root url, when '/' is accessed 
 @app.route("/")
 def index():
     current_user = current_logged_in_user()
+    pending_tasks = []
     
-    # current_user = None
-
-    # if "user_id" in session:
-    #     #added user in parameter
-    #     current_user = db.session.get(User, session["user_id"])
+    if current_user:
+        if current_user.role == "Manager":
+            pending_tasks = Task.query.filter(Task.status != 'completed').limit(5).all()
+        else:
+            pending_tasks = Task.query.filter_by(assigned_to=current_user.id).filter(Task.status != 'completed').limit(5).all()
 
     return render_template(
         "home.html",
         current_user=current_user,
-        pending_tasks=MOCK_PENDING_TASKS,
+        pending_tasks=pending_tasks,
         error=None,
         name="",
         email="",
@@ -86,7 +96,7 @@ def register():
         return render_template(
             "home.html",
             current_user=None,
-            pending_tasks=MOCK_PENDING_TASKS,
+            pending_tasks=[],
             error="Username or email already exists",
             name=username,
             email=email,
@@ -114,7 +124,7 @@ def register():
         return render_template(
             "home.html",
             current_user=None,
-            pending_tasks=MOCK_PENDING_TASKS,
+            pending_tasks=[],
             error="Could not create account. Try again.",
             name=username,
             email=email
@@ -137,7 +147,7 @@ def login():
     return render_template(
         "home.html",
         current_user=None,
-        pending_tasks=MOCK_PENDING_TASKS,
+        pending_tasks=[],
         error="Invalid email or password",
         name="",
         email=email
@@ -165,6 +175,69 @@ def logout():
 def list_users():
     users = User.query.all()
     return render_template("users.html", users=users)
+
+@app.route("/tasks")
+@login_required
+def tasks_view():
+    user = current_logged_in_user()
+    if user.role == "Manager":
+        tasks = Task.query.all()
+    else:
+        tasks = Task.query.filter_by(assigned_to=user.id).all()
+        
+    users_list = User.query.all() if user.role == "Manager" else []
+    return render_template("tasks.html", tasks=tasks, current_user=user, users=users_list)
+
+@app.route("/tasks/create", methods=["GET", "POST"])
+@login_required
+@manager_required
+def create_task():
+    if request.method == "POST":
+        title = request.form.get("title")
+        description = request.form.get("description")
+        assigned_to_id = request.form.get("assigned_to")
+        
+        new_task = Task(
+            title=title,
+            description=description,
+            assigned_to=int(assigned_to_id) if assigned_to_id else None,
+            created_by=session["user_id"]
+        )
+        db.session.add(new_task)
+        db.session.commit()
+        return redirect(url_for('tasks_view'))
+        
+    users_list = User.query.all()
+    return render_template("create_task.html", users=users_list, current_user=current_logged_in_user())
+
+@app.route("/tasks/<int:id>/complete", methods=["POST"])
+@login_required
+def complete_task(id):
+    task = Task.query.get_or_404(id)
+    user = current_logged_in_user()
+    
+    if user.role == "Manager" or task.assigned_to == user.id:
+        task.status = "completed"
+        db.session.commit()
+        
+    return redirect(url_for('tasks_view'))
+
+@app.route("/tasks/<int:id>/update", methods=["POST"])
+@login_required
+@manager_required
+def update_task(id):
+    task = Task.query.get_or_404(id)
+    
+    status = request.form.get("status")
+    assigned_to = request.form.get("assigned_to")
+    
+    if status in ['pending', 'in_progress', 'completed']:
+        task.status = status
+    if assigned_to:
+        task.assigned_to = int(assigned_to)
+        
+    db.session.commit()
+    return redirect(url_for('tasks_view'))
 
 
 if __name__ == '__main__':

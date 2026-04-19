@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasks Dashboard</title>
+</head>
+<body>
+    <h1>Tasks Dashboard</h1>
+    <a href="{{ url_for('index') }}">Home</a>
+    {% if current_user.role == 'Manager' %}
+        <a href="{{ url_for('create_task') }}">Create New Task</a>
+    {% endif %}
+
+    <br><br>
+    <table border="1" cellpadding="10" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Assigned User</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+            <tr>
+                <td>{{ task.title }}</td>
+                <td>{{ task.description or 'No description' }}</td>
+                <td>{{ task.status }}</td>
+                <td>
+                    {% if task.assignee %}
+                        {{ task.assignee.name }}
+                    {% else %}
+                        Unassigned
+                    {% endif %}
+                </td>
+                <td>
+                    <!-- Complete Button (both roles if assigned or manager) -->
+                    {% if task.status != 'completed' %}
+                        {% if current_user.role == 'Manager' or current_user.id == task.assigned_to %}
+                        <form action="{{ url_for('complete_task', id=task.id) }}" method="POST" style="display:inline;">
+                            <button type="submit">Mark Completed</button>
+                        </form>
+                        {% endif %}
+                    {% endif %}
+
+                    <!-- Edit/Update Status Form (Manager only) -->
+                    {% if current_user.role == 'Manager' %}
+                    <form action="{{ url_for('update_task', id=task.id) }}" method="POST" style="display:inline; margin-left: 10px;">
+                        <label for="status_{{ task.id }}">Status:</label>
+                        <select id="status_{{ task.id }}" name="status">
+                            <option value="pending" {% if task.status == 'pending' %}selected{% endif %}>Pending</option>
+                            <option value="in_progress" {% if task.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                            <option value="completed" {% if task.status == 'completed' %}selected{% endif %}>Completed</option>
+                        </select>
+                        <label for="assigned_{{ task.id }}">Assign To:</label>
+                        <select id="assigned_{{ task.id }}" name="assigned_to">
+                            <option value="">-- Unassigned --</option>
+                            {% for u in users %}
+                                <option value="{{ u.id }}" {% if task.assigned_to == u.id %}selected{% endif %}>{{ u.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit">Update</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">No tasks found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
