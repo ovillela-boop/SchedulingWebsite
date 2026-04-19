@@ -78,12 +78,15 @@ def register():
             email=email,
         )
     
+    manager_code = request.form.get("manager_code", "").strip()
+    user_role = "Manager" if manager_code.lower() == "manager" else "Employee"
+    
     try:
         new_user = User(
             name = username,
             email = email,
             password_hash = generate_password_hash(password),
-            role="Employee"
+            role=user_role
         )
         db.session.add(new_user)
         db.session.commit()

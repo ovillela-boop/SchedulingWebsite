@@ -1,127 +1,155 @@
 {% extends "base.html" %}
 
-{% block title %}Scheduling Homepage{% endblock %}
+{% block title %}Dashboard | Scheduling App{% endblock %}
 
 {% block content %}
-  <!-- Body Header -->
-  <header class="home-header">
-    <h1>Welcome to the Scheduling Dashboard</h1>
-  </header>
+<div class="dashboard-header">
+  <h1>Dashboard</h1>
+  <p class="page-subtext">Manage schedules, tasks, and attendance</p>
+</div>
 
-  <!-- Body Main -->
-  <main class="home-main">
+{% if current_user and current_user.is_authenticated %}
+  
+  <!-- Stats Cards Grid -->
+  <div class="stats-grid">
+    <div class="card stat-card">
+      <div class="stat-title">Quick Action</div>
+      <div class="stat-value" style="font-size: 20px; margin-top: 4px;">
+        <a href="{{ url_for('shifts_view') }}" class="btn btn-primary" style="width: 100%;">View Schedules -></a>
+      </div>
+    </div>
+    
+    <div class="card stat-card">
+      <div class="stat-title">Pending Tasks</div>
+      <div class="stat-value">
+        {% if pending_tasks %}
+          {{ pending_tasks|length }}
+        {% else %}
+          0
+        {% endif %}
+      </div>
+    </div>
+    
+    <div class="card stat-card">
+      <div class="stat-title">Time Tracker</div>
+      <div class="stat-value" style="font-size: 20px; margin-top: 4px;">
+        <a href="{{ url_for('clock_view') }}" class="btn btn-secondary" style="width: 100%;">Clock In / Out -></a>
+      </div>
+    </div>
 
-    <!-- Section Hero -->
-    <section class="hero">
-      <!-- Section Description -->
-      <p>
-        Manage schedules, tasks, attendance, and team communication
-        from one central dashboard.
-      </p>
-    </section>
+    {% if current_user.role == "Manager" %}
+    <div class="card stat-card" style="border-top: 4px solid var(--primary);">
+      <div class="stat-title">Manager Tools</div>
+      <div class="stat-value" style="font-size: 20px; margin-top: 4px;">
+        <a href="{{ url_for('manager_dashboard') }}" class="btn btn-secondary" style="width: 100%;">Dashboard -></a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
 
-    <!-- Log on / Create new user Form Section (Integration mysql) -->
-    <section class="feature-card">
-    {% if current_user %}
-      <h3>Welcome, {{ current_user.name }}</h3>
-      <p>You are logged in as {{ current_user.email }}</p>
-
-      <!-- Shows Current role once logged in -->
-      <p>Role: {{ current_user.role }}</p>
-      <a href="{{ url_for('list_users')}}">View all saved users</a>
+  <!-- Content Section -->
+  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+    
+    <!-- Recent Tasks -->
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="margin: 0;">Recent Tasks</h2>
+        <a href="{{ url_for('tasks_view') }}" class="btn btn-secondary" style="font-size: 13px; padding: 6px 12px;">View All</a>
+      </div>
       
-      <br><br>
-      <h4>Your Recent Tasks</h4>
       {% if pending_tasks %}
-        <ul>
-        {% for pt in pending_tasks %}
-          <li>{{ pt.title }} - {{ pt.status }}</li>
-        {% endfor %}
-        </ul>
+        <div class="table-container" style="box-shadow: none;">
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for pt in pending_tasks[:5] %}
+              <tr>
+                <td style="font-weight: 500;">{{ pt.title }}</td>
+                <td>
+                  <span class="badge badge-{{ pt.status }}">{{ pt.status|replace('_', ' ') }}</span>
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
       {% else %}
-        <p>No pending tasks! Good job.</p>
-      {% endif %}
-      
-    {% else %}
-      {% if error %}
-      <p class="flash-error">{{ error }}</p>
-      {% endif %}
-
-      <div class="auth-container">
-        <div class="auth-box">
-          <h3>Register</h3>
-          <form method="POST" action="{{ url_for('register') }}">
-            <label for="register-username">Username:</label><br>
-            <input type="text" id="register-username" name="username" required><br><br>
-            
-            <label for="register-email">Email:</label><br>
-            <input type="email" id="register-email" name="email" required><br><br>
-            
-            <label for="register-password">Password:</label><br>
-            <input type="password" id="register-password" name="password" required><br><br>
-            
-            <button type="submit">Register</button>   
-          </form>
+        <div style="padding: 40px; text-align: center; color: var(--text-sub); border: 1px dashed var(--border); border-radius: 8px;">
+          <p>No pending tasks! Great job catching up.</p>
         </div>
-
-        <div class="auth-box">
-          <h3>Log in</h3>
-            <form method="POST" action="{{ url_for('login') }}">
-              <label for="login-email">Email:</label><br>
-              <input type="email" id="login-email" name="email" required><br><br>
-
-              <label for="login-password"> Password:</label><br>
-              <input type="password" id="login-password" name="password" required><br><br>
-
-              <button type="submit"> Log In</button>
-            </form>
-        </div>
-      </div>  
-    {% endif %}
-    </section>
-    <br>
-
-    {% if current_user %}
-    <section class="feature-grid">
-      <article class="feature-card">
-        <h3><a href="{{ url_for('shifts_view') }}" style="text-decoration:none; color:inherit;">Schedules 📅</a></h3>
-        <p>Check shift arrangements quickly.</p>
-      </article>
-
-      <article class="feature-card">
-        <h3><a href="{{ url_for('tasks_view') }}" style="text-decoration:none; color:inherit;">Tasks ✓</a></h3>
-        <p>Track pending and completed tasks.</p>
-      </article>
-
-      <article class="feature-card">
-        <h3><a href="{{ url_for('clock_view') }}" style="text-decoration:none; color:inherit;">Clock Logs ⏱</a></h3>
-        <p>Review attendance and work hours.</p>
-      </article>
-
-      {% if current_user.role == "Manager" %}
-      <article class="feature-card" style="border-left: 4px solid #ffcccc;">
-        <h3><a href="{{ url_for('manager_dashboard') }}" style="text-decoration:none; color:inherit;">Manager Dash ♚</a></h3>
-        <p>Exclusive managerial tools.</p>
-      </article>
       {% endif %}
-    </section>
-    {% endif %}
-
-  </main>
-
-  <footer class="home-footer" style="margin-top: 40px; border-top: 1px solid #ccc; padding-top: 20px;">
-    <div class="footer-section" style="display: inline-block; width: 45%; vertical-align: top;">
-      <h3>About Us</h3>
-      <p>
-        Our scheduling platform helps teams organize appointments, staff shifts,
-        and daily work more efficiently.
-      </p>
     </div>
 
-    <div class="footer-section" style="display: inline-block; width: 45%; vertical-align: top;">
-      <h3>Contact Us</h3>
-      <p>Email: support@schedulingapp.com</p>
-      <p>Location: California State University, Fullerton</p>
+    <!-- User Details / Role -->
+    <div class="card">
+      <h2 style="margin-top: 0;">Account</h2>
+      <div style="margin-top: 16px;">
+        <div style="margin-bottom: 12px;">
+          <span style="color: var(--text-sub); font-size: 13px; display: block;">Name</span>
+          <span style="font-weight: 500;">{{ current_user.name }}</span>
+        </div>
+        <div style="margin-bottom: 12px;">
+          <span style="color: var(--text-sub); font-size: 13px; display: block;">Email</span>
+          <span style="font-weight: 500;">{{ current_user.email }}</span>
+        </div>
+        <div style="margin-bottom: 12px;">
+          <span style="color: var(--text-sub); font-size: 13px; display: block;">Role</span>
+          <span class="badge badge-in_progress">{{ current_user.role }}</span>
+        </div>
+      </div>
     </div>
-  </footer>
+  </div>
+
+{% else %}
+  
+  <!-- Logged Out View (Auth Pages) -->
+  <div style="display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; width: 100%; max-width: 900px; margin: 40px auto;">
+    
+    <!-- Login Box -->
+    <div class="card" style="flex: 1; min-width: 320px;">
+      <h2 style="text-align: center; margin-bottom: 24px;">Log in</h2>
+      <form method="POST" action="{{ url_for('login') }}">
+        <div class="form-group">
+          <label class="form-label" for="login-email">Email Address</label>
+          <input class="form-control" type="email" id="login-email" name="email" required placeholder="you@example.com">
+        </div>
+        <div class="form-group" style="margin-bottom: 24px;">
+          <label class="form-label" for="login-password">Password</label>
+          <input class="form-control" type="password" id="login-password" name="password" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">Sign in</button>
+      </form>
+    </div>
+
+    <!-- Register Box -->
+    <div class="card" style="flex: 1; min-width: 320px; background-color: var(--bg-color);">
+      <h2 style="text-align: center; margin-bottom: 24px;">Create Account</h2>
+      <form method="POST" action="{{ url_for('register') }}">
+        <div class="form-group">
+          <label class="form-label" for="register-username">Full Name</label>
+          <input class="form-control" type="text" id="register-username" name="username" required placeholder="Jane Doe">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="register-email">Email Address</label>
+          <input class="form-control" type="email" id="register-email" name="email" required placeholder="jane@example.com">
+        </div>
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label class="form-label" for="register-password">Password</label>
+          <input class="form-control" type="password" id="register-password" name="password" required placeholder="Choose a secure password">
+        </div>
+        <div class="form-group" style="margin-bottom: 24px;">
+          <label class="form-label" for="register-manager-code">Manager Code <span style="font-weight: normal; color: var(--text-sub);">(Optional)</span></label>
+          <input class="form-control" type="text" id="register-manager-code" name="manager_code" placeholder="Leave empty for employee">
+        </div>
+        <button type="submit" class="btn btn-secondary" style="width: 100%; padding: 12px; background-color: white;">Register Now</button>
+      </form>
+    </div>
+  </div>
+
+{% endif %}
 {% endblock %}

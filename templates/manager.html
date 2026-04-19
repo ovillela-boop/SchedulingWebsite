@@ -1,15 +1,49 @@
 {% extends "base.html" %}
 
-{% block title %}Manager Dashboard{% endblock %}
+{% block title %}Manager Dashboard | Scheduling App{% endblock %}
 
 {% block content %}
-  <h1>Manager Dashboard</h1>
-  <p>Welcome, {{ current_user.name }}</p>
-  <p>This page is for manager features only.</p>
+<div class="dashboard-header">
+  <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+    <div style="background-color: #fef2f2; color: #ef4444; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">MANAGER</div>
+    <h1 style="margin: 0;">Manager Overview</h1>
+  </div>
+  <p class="page-subtext">Access administrative tools and high-level insights.</p>
+</div>
 
-  <ul>
-    <li>Future: assign shifts</li>
-    <li>Future: view employees</li>
-    <li>Future: manage schedules</li>
-  </ul>
+<!-- Admin Quick Actions Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 32px;">
+  
+  <div class="card" style="border-top: 4px solid var(--primary); display: flex; flex-direction: column;">
+    <h2 style="font-size: 18px; margin-bottom: 8px;">Task Management</h2>
+    <p style="color: var(--text-sub); font-size: 14px; margin-bottom: 24px; flex: 1;">Assign new responsibilities to your team and track completion status directly.</p>
+    <a href="{{ url_for('create_task') }}" class="btn btn-primary" style="width: 100%;">Create New Task</a>
+  </div>
+
+  <div class="card" style="border-top: 4px solid #10b981; display: flex; flex-direction: column;">
+    <h2 style="font-size: 18px; margin-bottom: 8px;">Shift Scheduling</h2>
+    <p style="color: var(--text-sub); font-size: 14px; margin-bottom: 24px; flex: 1;">Organize coverage, adjust working hours, and notify employees.</p>
+    <a href="{{ url_for('create_shift') }}" class="btn btn-success" style="width: 100%;">Assign Shift</a>
+  </div>
+
+  <div class="card" style="border-top: 4px solid #8b5cf6; display: flex; flex-direction: column;">
+    <h2 style="font-size: 18px; margin-bottom: 8px;">User Directory</h2>
+    <p style="color: var(--text-sub); font-size: 14px; margin-bottom: 24px; flex: 1;">Review all registered users in the scheduling platform database.</p>
+    <a href="{{ url_for('list_users') }}" class="btn btn-secondary" style="width: 100%;">View Employee List</a>
+  </div>
+
+</div>
+
+<!-- Recent System Activity Placeholder Section -->
+<div class="card">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2 style="margin: 0; font-size: 18px;">Recent System Activity</h2>
+  </div>
+  
+  <div style="border: 1px dashed var(--border); padding: 40px; text-align: center; border-radius: 8px;">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--border)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 16px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+    <p style="color: var(--text-sub); margin: 0; font-size: 14px;">Activity stream is active. System logs will populate here.</p>
+  </div>
+</div>
+
 {% endblock %}

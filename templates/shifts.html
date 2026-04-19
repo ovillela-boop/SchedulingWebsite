@@ -1,47 +1,69 @@
 {% extends "base.html" %}
 
-{% block title %}Shifts Dashboard{% endblock %}
+{% block title %}Shifts | Scheduling App{% endblock %}
 
 {% block content %}
-    <h1>Shifts Dashboard</h1>
-    {% if current_user.role == 'Manager' %}
-        <a href="{{ url_for('create_shift') }}">Create New Shift</a>
-    {% endif %}
+<div class="page-actions">
+  <div>
+    <h1>Schedules & Shifts</h1>
+    <p class="page-subtext" style="margin-bottom: 0;">Review upcoming employee schedules.</p>
+  </div>
+  
+  {% if current_user.role == 'Manager' %}
+    <a href="{{ url_for('create_shift') }}" class="btn btn-primary">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+      Assign Shift
+    </a>
+  {% endif %}
+</div>
 
-    <br><br>
-    
-    {% if error %}
-        <p class="flash-error">{{ error }}</p>
-    {% endif %}
-
-    <table border="1" cellpadding="10" cellspacing="0">
-        <thead>
-            <tr>
-                <th>User</th>
-                <th>Date</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Notes</th>
-                <th>Status</th>
-                <th>Details</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for shift in shifts %}
-            <tr>
-                <td>{{ shift.user.name }}</td>
-                <td>{{ shift.date }}</td>
-                <td>{{ shift.start_time.strftime('%H:%M') }}</td>
-                <td>{{ shift.end_time.strftime('%H:%M') }}</td>
-                <td>{{ shift.notes or '' }}</td>
-                <td>{{ shift.status }}</td>
-                <td><a href="{{ url_for('shift_detail', id=shift.id) }}">View</a></td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="7">No shifts scheduled.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Employee</th>
+        <th>Date</th>
+        <th>Time Range</th>
+        <th>Notes</th>
+        <th>Status</th>
+        <th style="text-align: right;">Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for shift in shifts %}
+      <tr>
+        <td style="font-weight: 500;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 24px; height: 24px; border-radius: 50%; background-color: var(--secondary); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--text-sub);">
+              {{ shift.user.name[0]|upper }}
+            </div>
+            {{ shift.user.name }}
+          </div>
+        </td>
+        <td>{{ shift.date }}</td>
+        <td style="font-family: monospace; font-size: 13px; color: var(--text-sub);">
+          <span style="color: var(--text-main); font-weight: 500;">{{ shift.start_time.strftime('%H:%M') }}</span> 
+          - 
+          <span style="color: var(--text-main); font-weight: 500;">{{ shift.end_time.strftime('%H:%M') }}</span>
+        </td>
+        <td style="color: var(--text-sub); max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+          {{ shift.notes or '—' }}
+        </td>
+        <td>
+          <span class="badge" style="background-color: var(--secondary); color: var(--text-main); font-weight: 500;">{{ shift.status|capitalize }}</span>
+        </td>
+        <td style="text-align: right;">
+          <a href="{{ url_for('shift_detail', id=shift.id) }}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">View Details</a>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-sub);">
+          No shifts scheduled at this time.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

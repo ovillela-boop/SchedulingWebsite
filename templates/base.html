@@ -1,64 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Scheduling Website{% endblock %}</title>
+  <title>{% block title %}Scheduling Dashboard{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <style>
-    /* Basic navbar styling for immediate usability */
-    .navbar {
-      background-color: #333;
-      overflow: hidden;
-      margin-bottom: 20px;
-    }
-    .navbar a {
-      float: left;
-      display: block;
-      color: #f2f2f2;
-      text-align: center;
-      padding: 14px 16px;
-      text-decoration: none;
-    }
-    .navbar a:hover {
-      background-color: #ddd;
-      color: black;
-    }
-    .navbar .right {
-      float: right;
-    }
-    .flash-error {
-      color: white;
-      background-color: #dc3545;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 5px;
-    }
-  </style>
 </head>
+
 <body>
 
-  {% if session.get('user_id') %}
-  <nav class="navbar">
-    <a href="{{ url_for('index') }}">Home</a>
-    <a href="{{ url_for('tasks_view') }}">Tasks</a>
-    <a href="{{ url_for('shifts_view') }}">Shifts</a>
-    <a href="{{ url_for('clock_view') }}">Clock</a>
-    
-    {% if session.get('role') == 'Manager' %}
-    <a href="{{ url_for('manager_dashboard') }}" style="color: #ffcccc;">Manager Dash</a>
-    {% endif %}
-    
-    <div class="right">
-      <a href="{{ url_for('logout') }}">Log Out ({{ session.get('name') }})</a>
-    </div>
-  </nav>
-  {% endif %}
+  <div class="app-layout">
 
-  <main>
-    {% block content %}
-    {% endblock %}
-  </main>
+    {% if current_user and current_user.is_authenticated or session.get('user_id') %}
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        Scheduling
+      </div>
+      <nav class="sidebar-nav">
+        <!-- Determining active route can be complex in jinja without exact route matching, fallback to simple links -->
+        <a href="{{ url_for('index') }}" class="nav-item {% if request.endpoint == 'index' %}active{% endif %}">
+          Dashboard
+        </a>
+        <a href="{{ url_for('tasks_view') }}"
+          class="nav-item {% if request.endpoint in ['tasks_view', 'create_task'] %}active{% endif %}">
+          Tasks
+        </a>
+        <a href="{{ url_for('shifts_view') }}"
+          class="nav-item {% if request.endpoint in ['shifts_view', 'create_shift', 'shift_detail'] %}active{% endif %}">
+          Shifts
+        </a>
+        <a href="{{ url_for('clock_view') }}"
+          class="nav-item {% if request.endpoint == 'clock_view' %}active{% endif %}">
+          Clock
+        </a>
+
+        {% if session.get('role') == 'Manager' or (current_user and current_user.role == 'Manager') %}
+        <a href="{{ url_for('manager_dashboard') }}"
+          class="nav-item {% if request.endpoint == 'manager_dashboard' %}active{% endif %}"
+          style="margin-top: auto; border: 1px solid var(--border);">
+          Manager Dash
+        </a>
+        {% endif %}
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          {{ session.get('name') or (current_user.name if current_user else 'User') }}
+        </div>
+        <a href="{{ url_for('logout') }}" class="logout-btn">Log Out</a>
+      </div>
+    </aside>
+    {% endif %}
+
+    <!-- Main Content Area -->
+    <main class="main-content {% if not session.get('user_id') and not current_user %}content-unauth{% endif %}">
+
+      <!-- Flash Messages -->
+      <div class="flash-messages">
+        {% block flash_messages %}
+        {% if error %}
+        <div class="flash-message flash-error">{{ error }}</div>
+        {% endif %}
+        {% endblock %}
+      </div>
+
+      <!-- Page Specific Content -->
+      {% block content %}
+      {% endblock %}
+
+    </main>
+
+  </div>
 
 </body>
+
 </html>
