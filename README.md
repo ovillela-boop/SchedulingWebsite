@@ -1,44 +1,53 @@
-# CPSC 449 Back end Engineering Group Project 
-### Team Members:
-* Oscar Villela
-* Xiaohui Gao
-* Shaikh Amin
-### Idea Brief Summary:
-* Timeline - Meeting/Schedule organization and conflicts 
-* Allow for chats on different time blocks (ex. “Meeting is too early!”)
-* Clock in / Clock out - Show hours made while at job/meeting (maybe add location services)
-* Tasks, Assigned to employee
+# SaaS Scheduling Dashboard 
 
-List of behavioral functionalities to be Implemented:
-* Customer Booking Flow (Client can book a timeslot)
-* Admin Schedule Management (Admin access)
-* Profile Management - (Employee account, Admin Account)
+A modern, premium internal operations dashboard built with a **Flask API backend** and a pristine, dependency-free **HTML/CSS frontend**. 
 
-### Technical Stack: To be determined
+This system is designed as an all-in-one portal for teams to manage shift schedules, coordinate daily tasks, and calculate real-time attendance tracking via a digital clock-in system.
 
-#### Flask Stack
+## 🚀 Features
 
-* Flask app (Python code)
-           ↓
-* Flask-SQLAlchemy (Flask integration layer)
-           ↓
-* SQL Alchemy (query builder, intead of sql querie use python)
-           ↓
-* PyMySQL (Python driver)
-           ↓
-* MySQL Server (Actual Database)
-           ↓
-* mysql CLI (tool to interact with database)
+- **SaaS-Grade UI**: A completely custom, visually stunning interface using CSS variables, flexbox grids, and the Inter font—designed to mirror apps like Stripe and Linear.
+- **Role-Based Access Control**: Secure routing for both `Employee` and `Manager` accounts.
+- **Task Management**: Create, assign, and track tasks (Pending, In Progress, Completed).
+- **Shift Scheduling**: Assign employees precise time windows to work, viewable on their personal dashboard.
+- **Time Clock**: Real-time punch card tracking timestamps for accurate session management.
 
+## 🛠️ Tech Stack 
 
-#### Front-End:
-* React - Python  (flask)
-* HTML
-* CSS
+- **Backend Framework**: Python / Flask
+- **Database Architecture**: Flask-SQLAlchemy + SQLite (local-mode) / MySQL (production)
+- **Frontend Architecture**: Pure HTML5 and CSS3 (Jinja2 Templating). Zero Javascript frameworks (No React/Vue).
+- **Authentication**: Native Flask Sessions & Werkzeug Password Hashing.
 
-#### Back-End:
-* SQL (MySQL, MS SQL)
-* Node.js
-* PostgreSQL
-* JWT
+## ⚙️ How to Run Locally
 
+### 1. Requirements
+Ensure you have **Python 3.8+** installed. Optional: virtualenv.
+
+### 2. Setup
+Clone the repository and jump into the directory:
+```bash
+# Create and activate your environment
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows use `\.venv\Scripts\activate`
+
+# Install dependencies (ensure you have Flask, SQLAlchemy, etc.)
+pip install -r requirements.txt
+```
+
+### 3. Running the Server 
+```bash
+python3 main.py
+```
+Open `http://127.0.0.1:5000` in your web browser.
+
+## 👑 Manager Access
+
+By default, any new account created on the registration page is immediately registered as a standard **Employee**.
+
+**To register as a Manager for administrative testing:**
+When creating your account on the `/register` page, locate the optional `Manager Code` input field. Type the exact word `manager` into this box. The application will instantly flag your new user profile as a Manager, granting you access to the Admin portal!
+
+---
+*Created for CPSC 449 Back End Engineering*
+*Team: Oscar Villela, Xiaohui Gao, Shaikh Amin*
