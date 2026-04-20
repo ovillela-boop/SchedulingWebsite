@@ -66,7 +66,7 @@ def register():
         session["username"] = new_user.username
         session["email"] = new_user.email
 
-        return redirect(url_for("main.index"))
+        return redirect(url_for("main.dashboard"))
 
     except IntegrityError:
         db.session.rollback()
@@ -89,7 +89,7 @@ def login():
         session["user_id"] = user.id
         session["username"] = user.username
         session["email"] = user.email
-        return redirect(url_for("main.index"))
+        return redirect(url_for("main.dashboard"))
 
     return render_template(
         "home.html",

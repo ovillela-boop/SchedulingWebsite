@@ -8,7 +8,7 @@
   <p class="page-subtext">Manage schedules, tasks, and attendance</p>
 </div>
 
-{% if current_user and current_user.is_authenticated %}
+{% if current_user %}
   
   <!-- Stats Cards Grid -->
   <div class="stats-grid">
@@ -91,7 +91,7 @@
       <div style="margin-top: 16px;">
         <div style="margin-bottom: 12px;">
           <span style="color: var(--text-sub); font-size: 13px; display: block;">Name</span>
-          <span style="font-weight: 500;">{{ current_user.name }}</span>
+          <span style="font-weight: 500;">{{ current_user.username }}</span>
         </div>
         <div style="margin-bottom: 12px;">
           <span style="color: var(--text-sub); font-size: 13px; display: block;">Email</span>
