@@ -39,7 +39,7 @@ def register():
     password = request.form["password"].strip()
 
     existing_user = User.query.filter(
-        or_(User.username == username, User.email == email)
+        or_(User.name == username, User.email == email)
     ).first()
 
     if existing_user:
@@ -54,7 +54,7 @@ def register():
 
     try:
         new_user = User(
-            username = username,
+            name = username,
             email = email,
             password_hash = generate_password_hash(password),
             role="Manager"
@@ -63,8 +63,9 @@ def register():
         db.session.commit()
 
         session["user_id"] = new_user.id
-        session["username"] = new_user.username
+        session["name"] = new_user.name
         session["email"] = new_user.email
+        session["role"] = new_user.role
 
         return redirect(url_for("main.dashboard"))
 
@@ -87,8 +88,9 @@ def login():
     user = User.query.filter_by(email=email).first()
     if user and check_password_hash(user.password_hash, password):
         session["user_id"] = user.id
-        session["username"] = user.username
+        session["name"] = user.name
         session["email"] = user.email
+        session["role"] = user.role
         return redirect(url_for("main.dashboard"))
 
     return render_template(
