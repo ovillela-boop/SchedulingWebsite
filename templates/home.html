@@ -15,7 +15,7 @@
     <div class="card stat-card">
       <div class="stat-title">Quick Action</div>
       <div class="stat-value" style="font-size: 20px; margin-top: 4px;">
-        <a href="{{ url_for('shifts_view') }}" class="btn btn-primary" style="width: 100%;">View Schedules -></a>
+        <a href="{{ url_for('shifts.shifts_view') }}" class="btn btn-primary" style="width: 100%;">View Schedules -></a>
       </div>
     </div>
     
@@ -33,7 +33,7 @@
     <div class="card stat-card">
       <div class="stat-title">Time Tracker</div>
       <div class="stat-value" style="font-size: 20px; margin-top: 4px;">
-        <a href="{{ url_for('clock_view') }}" class="btn btn-secondary" style="width: 100%;">Clock In / Out -></a>
+        <a href="{{ url_for('clock.clock_view') }}" class="btn btn-secondary" style="width: 100%;">Clock In / Out -></a>
       </div>
     </div>
 
@@ -41,7 +41,7 @@
     <div class="card stat-card" style="border-top: 4px solid var(--primary);">
       <div class="stat-title">Manager Tools</div>
       <div class="stat-value" style="font-size: 20px; margin-top: 4px;">
-        <a href="{{ url_for('manager_dashboard') }}" class="btn btn-secondary" style="width: 100%;">Dashboard -></a>
+        <a href="{{ url_for('manager.manager_dashboard') }}" class="btn btn-secondary" style="width: 100%;">Dashboard -></a>
       </div>
     </div>
     {% endif %}
@@ -54,7 +54,7 @@
     <div class="card">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h2 style="margin: 0;">Recent Tasks</h2>
-        <a href="{{ url_for('tasks_view') }}" class="btn btn-secondary" style="font-size: 13px; padding: 6px 12px;">View All</a>
+        <a href="{{ url_for('tasks.tasks_view') }}" class="btn btn-secondary" style="font-size: 13px; padding: 6px 12px;">View All</a>
       </div>
       
       {% if pending_tasks %}
@@ -113,7 +113,7 @@
     <!-- Login Box -->
     <div class="card" style="flex: 1; min-width: 320px;">
       <h2 style="text-align: center; margin-bottom: 24px;">Log in</h2>
-      <form method="POST" action="{{ url_for('login') }}">
+      <form method="POST" action="{{ url_for('auth.login') }}">
         <div class="form-group">
           <label class="form-label" for="login-email">Email Address</label>
           <input class="form-control" type="email" id="login-email" name="email" required placeholder="you@example.com">
@@ -129,7 +129,7 @@
     <!-- Register Box -->
     <div class="card" style="flex: 1; min-width: 320px; background-color: var(--bg-color);">
       <h2 style="text-align: center; margin-bottom: 24px;">Create Account</h2>
-      <form method="POST" action="{{ url_for('register') }}">
+      <form method="POST" action="{{ url_for('auth.register') }}">
         <div class="form-group">
           <label class="form-label" for="register-username">Full Name</label>
           <input class="form-control" type="text" id="register-username" name="username" required placeholder="Jane Doe">

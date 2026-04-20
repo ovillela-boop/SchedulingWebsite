@@ -10,7 +10,7 @@
   </div>
   
   {% if current_user.role == 'Manager' %}
-    <a href="{{ url_for('create_shift') }}" class="btn btn-primary">
+    <a href="{{ url_for('shifts.create_shift') }}" class="btn btn-primary">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
       Assign Shift
     </a>
@@ -35,9 +35,9 @@
         <td style="font-weight: 500;">
           <div style="display: flex; align-items: center; gap: 8px;">
             <div style="width: 24px; height: 24px; border-radius: 50%; background-color: var(--secondary); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--text-sub);">
-              {{ shift.user.name[0]|upper }}
+              {{ shift.user.username[0]|upper }}
             </div>
-            {{ shift.user.name }}
+            {{ shift.user.username }}
           </div>
         </td>
         <td>{{ shift.date }}</td>
@@ -53,7 +53,7 @@
           <span class="badge" style="background-color: var(--secondary); color: var(--text-main); font-weight: 500;">{{ shift.status|capitalize }}</span>
         </td>
         <td style="text-align: right;">
-          <a href="{{ url_for('shift_detail', id=shift.id) }}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">View Details</a>
+          <a href="{{ url_for('shifts.shift_detail', id=shift.id) }}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">View Details</a>
         </td>
       </tr>
       {% else %}

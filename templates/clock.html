@@ -53,13 +53,13 @@
     
     <!-- Action Button -->
     {% if current_status == "Clocked Out" %}
-      <form action="{{ url_for('clock_in') }}" method="POST" style="margin: 0;">
+      <form action="{{ url_for('clock.clock_in') }}" method="POST" style="margin: 0;">
         <button type="submit" class="btn btn-success" style="width: 100%; padding: 20px; font-size: 18px; font-weight: 600; border-radius: 12px; letter-spacing: 0.5px;">
           Clock In Now
         </button>
       </form>
     {% else %}
-      <form action="{{ url_for('clock_out') }}" method="POST" style="margin: 0;">
+      <form action="{{ url_for('clock.clock_out') }}" method="POST" style="margin: 0;">
         <button type="submit" class="btn" style="background-color: var(--text-main); color: white; width: 100%; padding: 20px; font-size: 18px; font-weight: 600; border-radius: 12px; letter-spacing: 0.5px;">
           Clock Out
         </button>

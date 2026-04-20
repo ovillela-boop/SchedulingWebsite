@@ -20,25 +20,25 @@
       </div>
       <nav class="sidebar-nav">
         <!-- Determining active route can be complex in jinja without exact route matching, fallback to simple links -->
-        <a href="{{ url_for('index') }}" class="nav-item {% if request.endpoint == 'index' %}active{% endif %}">
+        <a href="{{ url_for('main.index') }}" class="nav-item {% if request.endpoint == 'main.index' %}active{% endif %}">
           Dashboard
         </a>
-        <a href="{{ url_for('tasks_view') }}"
-          class="nav-item {% if request.endpoint in ['tasks_view', 'create_task'] %}active{% endif %}">
+        <a href="{{ url_for('tasks.tasks_view') }}"
+          class="nav-item {% if request.endpoint in ['tasks.tasks_view', 'tasks.create_task'] %}active{% endif %}">
           Tasks
         </a>
-        <a href="{{ url_for('shifts_view') }}"
-          class="nav-item {% if request.endpoint in ['shifts_view', 'create_shift', 'shift_detail'] %}active{% endif %}">
+        <a href="{{ url_for('shifts.shifts_view') }}"
+          class="nav-item {% if request.endpoint in ['shifts.shifts_view', 'shifts.create_shift', 'shifts.shift_detail'] %}active{% endif %}">
           Shifts
         </a>
-        <a href="{{ url_for('clock_view') }}"
-          class="nav-item {% if request.endpoint == 'clock_view' %}active{% endif %}">
+        <a href="{{ url_for('clock.clock_view') }}"
+          class="nav-item {% if request.endpoint == 'clock.clock_view' %}active{% endif %}">
           Clock
         </a>
 
         {% if session.get('role') == 'Manager' or (current_user and current_user.role == 'Manager') %}
-        <a href="{{ url_for('manager_dashboard') }}"
-          class="nav-item {% if request.endpoint == 'manager_dashboard' %}active{% endif %}"
+        <a href="{{ url_for('manager.manager_dashboard') }}"
+          class="nav-item {% if request.endpoint == 'manager.manager_dashboard' %}active{% endif %}"
           style="margin-top: auto; border: 1px solid var(--border);">
           Manager Dash
         </a>
@@ -47,9 +47,9 @@
 
       <div class="sidebar-footer">
         <div class="user-info">
-          {{ session.get('name') or (current_user.name if current_user else 'User') }}
+          {{ session.get('username') or (current_user.username if current_user else 'User') }}
         </div>
-        <a href="{{ url_for('logout') }}" class="logout-btn">Log Out</a>
+        <a href="{{ url_for('auth.logout') }}" class="logout-btn">Log Out</a>
       </div>
     </aside>
     {% endif %}

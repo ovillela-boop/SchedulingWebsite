@@ -9,12 +9,12 @@
         <p class="flash-error">{{ error }}</p>
     {% endif %}
 
-    <form action="{{ url_for('create_shift') }}" method="POST">
+    <form action="{{ url_for('shifts.create_shift') }}" method="POST">
         <label for="user_id">Assign To Employee:</label><br>
         <select id="user_id" name="user_id" required>
             <option value="">-- Select Employee --</option>
             {% for u in users %}
-                <option value="{{ u.id }}">{{ u.name }} ({{ u.role }})</option>
+                <option value="{{ u.id }}">{{ u.username }} ({{ u.role }})</option>
             {% endfor %}
         </select><br><br>
         

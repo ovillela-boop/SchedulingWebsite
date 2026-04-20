@@ -5,7 +5,7 @@
 {% block content %}
     <h1>Create New Task</h1>
     
-    <form action="{{ url_for('create_task') }}" method="POST">
+    <form action="{{ url_for('tasks.create_task') }}" method="POST">
         <label for="title">Title:</label><br>
         <input type="text" id="title" name="title" required><br><br>
         
