@@ -14,7 +14,7 @@
         <select id="user_id" name="user_id" required>
             <option value="">-- Select Employee --</option>
             {% for u in users %}
-                <option value="{{ u.id }}">{{ u.username }} ({{ u.role }})</option>
+                <option value="{{ u.id }}">{{ u.name }} ({{ u.role }})</option>
             {% endfor %}
         </select><br><br>
         

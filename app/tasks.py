@@ -1,7 +1,9 @@
 from flask import Blueprint, render_template
+from app.models import Task
 
 tasks_bp = Blueprint("tasks", __name__)
 
 @tasks_bp.route("/tasks")
 def tasks_view():
-    return "<h1>Tasks page coming soon</h1>"
+    tasks = Task.query.all()
+    return render_template("tasks.html", tasks=tasks)

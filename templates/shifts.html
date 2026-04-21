@@ -9,7 +9,7 @@
     <p class="page-subtext" style="margin-bottom: 0;">Review upcoming employee schedules.</p>
   </div>
   
-  {% if current_user.role == 'Manager' %}
+  {% if current_user and current_user.role == 'Manager' %}
     <a href="{{ url_for('shifts.create_shift') }}" class="btn btn-primary">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
       Assign Shift
@@ -35,9 +35,9 @@
         <td style="font-weight: 500;">
           <div style="display: flex; align-items: center; gap: 8px;">
             <div style="width: 24px; height: 24px; border-radius: 50%; background-color: var(--secondary); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--text-sub);">
-              {{ shift.user.username[0]|upper }}
+              {{ shift.user.name[0]|upper }}
             </div>
-            {{ shift.user.username }}
+            {{ shift.user.name }}
           </div>
         </td>
         <td>{{ shift.date }}</td>

@@ -1,6 +1,6 @@
-from flask import Flask
+from flask import Flask, session
 import os
-from .models import db
+from app.models import db, User
 
 def create_app():
     app = Flask(__name__, template_folder="../templates", static_folder="../static")
@@ -21,11 +21,21 @@ def create_app():
     from .shifts import shifts_bp
     from .clock import clock_bp
 
+    @app.context_processor
+    def inject_current_user():
+        current_user = None
+        if "user_id" in session:
+            current_user = User.query.get(session["user_id"])
+        return dict(current_user=current_user)
+
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
     app.register_blueprint(manager_bp)
     app.register_blueprint(tasks_bp)
     app.register_blueprint(shifts_bp)
     app.register_blueprint(clock_bp)
+
+    with app.app_context():
+        db.create_all()
 
     return app
