@@ -20,6 +20,7 @@ def create_app():
     from .tasks import tasks_bp
     from .shifts import shifts_bp
     from .clock import clock_bp
+    from .availability import availability_bp
 
     @app.context_processor
     def inject_current_user():
@@ -34,6 +35,7 @@ def create_app():
     app.register_blueprint(tasks_bp)
     app.register_blueprint(shifts_bp)
     app.register_blueprint(clock_bp)
+    app.register_blueprint(availability_bp)
 
     with app.app_context():
         db.create_all()
