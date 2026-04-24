@@ -73,3 +73,17 @@ class Booking(db.Model):
 
     def __repr__(self):
         return f"<Booking {self.customer_name} on {self.date} at {self.time_slot}>"
+
+class Availability(db.Model):
+    __tablename__ = 'availability'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+    start_time = db.Column(db.DateTime, nullable=False)
+    end_time = db.Column(db.DateTime, nullable=False)
+
+    status = db.Column(db.String(20), nullable=False)  # available or busy
+    notes = db.Column(db.Text, nullable=True)
+
+    user = db.relationship("User", backref="availability")
