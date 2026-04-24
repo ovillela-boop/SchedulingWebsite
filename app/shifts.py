@@ -11,7 +11,7 @@ def shifts_view():
 
 @shifts_bp.route("/shifts/<int:id>")
 def shift_detail(id):
-    shift = shift.query.get_or_404(id)
+    shift = Shift.query.get_or_404(id)
     return render_template("shift_detail.html", shift=shift)
 
 @shifts_bp.route("/shifts/create", methods=["GET","POST"])
@@ -30,7 +30,8 @@ def create_shift():
             date=date,
             start_time=start_time,
             end_time=end_time,
-            notes=notes
+            notes=notes,
+            status="scheduled"
         )
 
         db.session.add(new_shift)
