@@ -60,7 +60,7 @@
             
             <!-- Quick Complete Form -->
             {% if task.status != 'completed' %}
-              {% if current_user.role == 'Manager' or current_user.id == task.assigned_to %}
+              {% if current_user and (current_user.role == 'Manager' or current_user.id == task.assigned_to) %}
               <form action="{{ url_for('tasks.complete_task', id=task.id) }}" method="POST" style="margin: 0;">
                 <button type="submit" class="btn btn-success" style="padding: 6px 12px; font-size: 12px;">Complete</button>
               </form>
