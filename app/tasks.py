@@ -54,7 +54,7 @@ def update_task(id):
 
     task.status = request.form.get("status", task.status)
     assigned_to = request.form.get("assigned_to")
-    task.assigned_to = int(assinged_to) if assigned_to else None
+    task.assigned_to = int(assigned_to) if assigned_to else None
 
     db.session.commit()
     return redirect(url_for("tasks.tasks_view"))
