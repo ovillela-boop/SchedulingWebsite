@@ -43,17 +43,17 @@ def create_task():
 
 @tasks_bp.route("/tasks/<int:id>/complete", methods=["POST"])
 def complete_task(id):
-    task =Task.query.get_or_404(id)
+    task = Task.query.get_or_404(id)
     task.status = "completed"
-    db.session_commit()
+    db.session.commit()
     return redirect(url_for("tasks.tasks_view"))
 
 @tasks_bp.route("/tasks/<int:id>/update", methods=["POST"])
 def update_task(id):
     task = Task.query.get_or_404(id)
 
-    task.status = request.form.get("status")
-    assinged_to = request.form.get("assigned_to")
+    task.status = request.form.get("status", task.status)
+    assigned_to = request.form.get("assigned_to")
     task.assigned_to = int(assinged_to) if assigned_to else None
 
     db.session.commit()
