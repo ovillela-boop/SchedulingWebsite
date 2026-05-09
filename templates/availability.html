@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Availability | Scheduling App{% endblock %}
+
+{% block content %}
+<!-- Page Heeader -->
+<div class="page-actions">
+  <div>
+    <h1>My Availability</h1>
+    <p class="page-subtext" style="margin-bottom:0;">
+      Drag across times to mark when you are available or busy.
+    </p>
+  </div>
+</div>
+<!-- Dropdown that lets user pick betweeb available and busy -->
+<div style="margin-bottom:16px; max-width:220px;">
+  <label style="display:block; margin-bottom:6px;">Status</label>
+
+  <select id="statusSelect" class="form-control">
+    <option value="available">Available</option>
+    <option value="busy">Busy</option>
+  </select>
+</div>
+
+<!-- FullCalendat will render inside this div -->
+<div class="card" style="padding:20px;">
+    <!-- Will render inside this div -->
+  <div id="calendar"></div>
+</div>
+
+<!-- Load FullCalendat CSS and Javascript from CDN -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js"></script>
+
+<script>
+    // Waits for the page to fully load before executing
+document.addEventListener("DOMContentLoaded", function () {
+
+//   Create the full calendar object
+    const calendarEl = document.getElementById("calendar");
+
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: window.innerWidth < 768 ? "listWeek" : "timeGridWeek",
+
+    selectable: true,
+    nowIndicator: true,
+    height: "auto",
+    slotMinTime: "06:00:00",
+    slotMaxTime: "23:00:00",
+
+    headerToolbar: {
+      left: "prev,next today",
+      center: "title",
+      right: "timeGridWeek,timeGridDay,listWeek"
+    },
+
+    events: "/availability/events",
+    //  when user clicks run function
+    select: function(info) {
+
+      const status =
+        document.getElementById("statusSelect").value;
+        // Sends the elected time block to flask so it can be saved 
+      fetch("/availability/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          start: info.startStr,
+          end: info.endStr,
+          status: status
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        // Reload calnders after saving
+        if (data.success) {
+          calendar.refetchEvents();
+          calendar.unselect();
+        }
+      });
+    }
+  });
+// Display the calnder on the page 
+  calendar.render();
+});
+</script>
+
+{% endblock %}
